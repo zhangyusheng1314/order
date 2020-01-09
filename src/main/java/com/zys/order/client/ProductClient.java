@@ -13,7 +13,7 @@ import java.util.List;
  */
 @FeignClient(name = "product")
 public interface ProductClient {
-     //product接口的url
+    //product接口的url
     @RequestMapping("/msg")
     String getMsg();
     @RequestMapping("/product/getListById")
