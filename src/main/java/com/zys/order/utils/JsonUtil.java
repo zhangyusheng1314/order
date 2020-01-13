@@ -45,7 +45,7 @@ public class JsonUtil {
 
 
 	/**
-	 * json转对象
+	 * json转数组对象
 	 * @param string
 	 * @param typeReference
 	 * @return

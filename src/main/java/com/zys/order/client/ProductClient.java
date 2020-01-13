@@ -2,8 +2,7 @@ package com.zys.order.client;
 
 import com.zys.order.dto.CartDTO;
 import com.zys.order.model.ProductInfo;
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
