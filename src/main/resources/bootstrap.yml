@@ -18,6 +18,16 @@ spring:
         message:
           group: order
           content-type: application/json
+  #服务追踪可视化
+  zipkin:
+    base-url: http://localhost:9411/
+    #发送到web端 如果项目中配置了rabbit的话会默认发送到rabbit
+    sender:
+      type: web
+  #将服务追踪的东西发送到其他平台 默认发送0.1即发送10%
+  sleuth:
+    sampler:
+      probability: 1
 #以下配置通过config-server去git上面获取 详情参见config项目
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,6 +39,34 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8001/eureka/
-
+#接口之间用feignClient的调用超时使用如下方式
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
 #server:
 #  port: 8081
+#配置hystrix超时熔断 接口之间用restTemplate的调用的时候超时降级使用如下方式
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 1000
+#    #配置hystrix给特定的方法熔断 getProductList为方法名
+#    getProductList:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * product减完订单商品的数量后发送消息回来将商品的库存数量放入redis
+ */
 @Component
 @Slf4j
 public class ProductInfoConsumer {

@@ -5,6 +5,8 @@ import com.zys.order.dto.CartDTO;
 import com.zys.order.dto.OrderDTO;
 import com.zys.order.enums.OrderStatus;
 import com.zys.order.enums.PayStatus;
+import com.zys.order.enums.ResultEnums;
+import com.zys.order.exception.OrderException;
 import com.zys.order.model.OrderDetail;
 import com.zys.order.model.OrderMaster;
 import com.zys.order.model.ProductInfo;
@@ -15,9 +17,13 @@ import com.zys.order.utils.KeyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductClient productClient;
     @Override
+    @Transactional
     public OrderDTO create(OrderDTO order) {
         String orderId = KeyUtil.genUniqueKey();
 
@@ -75,5 +82,33 @@ public class OrderServiceImpl implements OrderService {
         orderMaster.setPayStatus(PayStatus.WAIT.getStatus());
         orderMasterRepository.save(orderMaster);
         return order;
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO finish(String orderId) {
+        Optional<OrderMaster> orderMaster = orderMasterRepository.findById(orderId);
+        OrderMaster order = orderMaster.get();
+        //订单是否存在
+        if (!orderMaster.isPresent()) {
+            throw new OrderException(ResultEnums.PRODUCT_IS_EXISTS);
+        }
+        //是否是新订单
+        if (order.getOrderStatus()!= OrderStatus.NEW.getStatus()) {
+            throw new OrderException(ResultEnums.PRODUCT_IS_NEW);
+        }
+        //修改为完结订单
+        order.setOrderStatus(OrderStatus.FINISHED.getStatus());
+        orderMasterRepository.save(order);
+
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getOrderId());
+
+        if (CollectionUtils.isEmpty(orderDetails)) {
+            throw new OrderException(ResultEnums.PRODUCT_DETAIL_IS_EXISTS);
+        }
+        OrderDTO orderDTO = new OrderDTO();
+        BeanUtils.copyProperties(orderMaster,orderDTO);
+        orderDTO.setOrderDetailList(orderDetails);
+        return orderDTO;
     }
 }

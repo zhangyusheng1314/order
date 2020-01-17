@@ -7,6 +7,7 @@ import com.zys.order.vo.ResultVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -46,5 +47,17 @@ public class OrderController {
         return ResultVOUtil.success(map);
     }
 
-
+    /**
+     * 1.查询订单是否存在
+     * 2.查看是否是新订单
+     * 3.修改订单状态为完结
+     * 4.加入订单详情
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("/finish")
+    public ResultVO finish(@RequestParam String orderId){
+        OrderDTO orderDTO = orderService.finish(orderId);
+        return ResultVOUtil.success(orderDTO);
+    }
 }
